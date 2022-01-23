@@ -16,5 +16,5 @@ component.fills.map((fill: any) => {
 If not working, feel free to email me (nushainef@gmail.com) for more assistance :)
 
 
-P.S. This code snippet was copied from Unify. Unify converts your Figma components into production-ready code. Check it out at [useunify.app]
+P.S. This code snippet was copied from Unify. Unify converts your Figma components into production-ready code. Check it out at [https://www.useunify.app/]()
 
