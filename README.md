@@ -14,5 +14,5 @@ component.fills.map((fill: any) => {
 ```
 
 
-If still not working, feel free to email nushainef@gmail.com for more assistance
+If not working, feel free to email me (nushainef@gmail.com) for more assistance :)
 
