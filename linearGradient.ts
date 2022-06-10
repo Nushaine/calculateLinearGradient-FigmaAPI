@@ -2,6 +2,8 @@
 export function round(num: number, decimalPlaces: number) {
   return parseFloat(num.toFixed(decimalPlaces))
 }
+
+
 export function RGBAObject2String(object: any, opacity: any) {
   return "rgba(" + String(round((object.r*255), 0)) + "," + String(round((object.g*255), 0)) + "," + String(round((object.b*255), 0)) + "," + String(round(opacity, 2)) + ")"
 }
