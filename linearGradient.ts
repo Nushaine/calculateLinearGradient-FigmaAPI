@@ -38,6 +38,8 @@ export function calculateIntersection(p1: any, p2: any, p3: any, p4: any) {
 
     return p;
 }
+
+
 export function rotate(cx: number, cy: number, x: number, y: number, angle: number) {
     var radians = (Math.PI / 180) * angle,
         cos = Math.cos(radians),
@@ -46,9 +48,10 @@ export function rotate(cx: number, cy: number, x: number, y: number, angle: numb
         ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
     return [nx, ny];
 }
+
+
 export function rotateElipse(cx: number, cy: number, xRadius: number, yRadius: number, angle: number, rotationFactor: number){
     'https://www.desmos.com/calculator/aqlhivzbvs' // -> rotated elipse equations
-
     'https://www.mathopenref.com/coordparamellipse.html' // -> good explanation about elipse parametric equations
     'https://math.stackexchange.com/questions/941490/whats-the-parametric-equation-for-the-general-form-of-an-ellipse-rotated-by-any?noredirect=1&lq=1&newreg=fd8890e3dad245b0b6a0f182ba22f7f3' // -> good explanation of rotated parametric elipse equations
     // rotates points[x, y] some degrees about an origin [cx, cy]
@@ -62,17 +65,18 @@ export function rotateElipse(cx: number, cy: number, xRadius: number, yRadius: n
     const y = ((-yRadius * Math.cos(normalizedRotationFactor) * sinAngle) + (xRadius * Math.sin(normalizedRotationFactor) * cosAngle)) + cy    
     return [x, y]
 }
-export function getCorners(component: any, elemRotation: number) {
 
+
+export function getCorners(component: any, elemRotation: number) {
     // gets all 4 corners of a vector even if vector rotated
     const topLeft = [component.relativeTransform[0][2], component.relativeTransform[1][2]]
     const topRight = rotate(topLeft[0], topLeft[1], topLeft[0] + component.size.x, topLeft[1], -elemRotation)
     const bottomRight = rotate(topRight[0], topRight[1], topRight[0], topRight[1] + component.size.y, -elemRotation)
     const bottomLeft = rotate(bottomRight[0], bottomRight[1], bottomRight[0] - component.size.x, bottomRight[1], -elemRotation)
-
     return {'topLeft': topLeft, 'topRight': topRight, 'bottomLeft': bottomLeft, 'bottomRight': bottomRight}
-
 }
+
+
 export function calculateAngle(x1: number, y1: number, x2: number, y2: number) {
     let angle = Math.round(((180 / Math.PI) * Math.atan((y2-y1) / (x2-x1)))* 100) / 100
 
@@ -94,23 +98,23 @@ export function calculateAngle(x1: number, y1: number, x2: number, y2: number) {
             angle = 360 - Math.abs(angle) // on negative y-axis
         } else {
             angle = Math.abs(angle) // on positive y-axis
-
         }
     }
     return Math.round(angle * 100) / 100
 }
+
+
 export function getGradientPoints(topLeftCorner: any, pointRelativeCoords: any, shapeCenter:any, elemRotate: number) {
     const pointAbsoluteCoords = rotate(topLeftCorner[0], topLeftCorner[1], topLeftCorner[0] + pointRelativeCoords[0], topLeftCorner[1] + pointRelativeCoords[1], elemRotate)
     return pointAbsoluteCoords
 }
+
+
 export function createLinearGradient(fill: any, component: any) {
     //let temp = extractLinearGradientParamsFromTransform(component.absoluteBoundingBox.width, component.absoluteBoundingBox.height, fill.gradientTransform)
-
     let gradientAngle = calculateAngle(fill.gradientHandlePositions[2].x, fill.gradientHandlePositions[2].y, fill.gradientHandlePositions[0].x, fill.gradientHandlePositions[0].y)
 
-
     // this next section finds the linear gradient line segment -> https://stackoverflow.com/questions/51881307 creating-a-css-linear-gradient-based-on-two-points-relative-to-a-rectangle
-
     // calculating gradient line size (scalar) and change in x, y direction (coords)
     const lineChangeCoords = [
         (fill.gradientHandlePositions[1].x - fill.gradientHandlePositions[0].x) * component.size.x, 
@@ -123,12 +127,10 @@ export function createLinearGradient(fill: any, component: any) {
     const scaleFactor = ((desiredLength-currentLineSize) / 2) / currentLineSize
     const scaleCoords = [lineChangeCoords[0] * scaleFactor, lineChangeCoords[1] * scaleFactor]
 
-
     const elemRotate = -Math.acos(component.relativeTransform[0][0]) * (180 / Math.PI)
     const corners = getCorners(component, elemRotate)
 
     const shapeCenter = calculateIntersection(corners.topLeft, corners.bottomRight, corners.topRight, corners.bottomLeft)
-
 
     const scaledArbGradientLine = [
         getGradientPoints(
@@ -144,6 +146,7 @@ export function createLinearGradient(fill: any, component: any) {
             elemRotate
         )
     ]
+    
     // getting relevant corners     
     const centers = {
         "top": gradientAngle > 90 && gradientAngle <= 180 || gradientAngle > 270 && gradientAngle <= 360 ?  corners.topLeft : corners.topRight, 
@@ -170,13 +173,11 @@ export function createLinearGradient(fill: any, component: any) {
     const perpLines = {"top": rotatedtopLine, "bottom": rotatedbottomLine}
 
     // calculating relevant portion of gradient line (the actual gradient line -> taking POI of perpendicular lines w/ arbitrary gradient line)
-
     const topLineIntersection = calculateIntersection(perpLines.top[0], perpLines.top[1], scaledArbGradientLine[0], scaledArbGradientLine[1])
     const bottomLineIntersection = calculateIntersection(perpLines.bottom[0], perpLines.bottom[1], scaledArbGradientLine[0], scaledArbGradientLine[1])
 
     const gradientLine = {"topCoords": topLineIntersection, "bottomCoords": bottomLineIntersection}
     const gradientLineDistance = Math.sqrt(((gradientLine.bottomCoords.y - gradientLine.topCoords.y) ** 2) + ((gradientLine.bottomCoords.x - gradientLine.topCoords.x) ** 2))
-
 
     const rounded = {
         "x1": Math.round(fill.gradientHandlePositions[0].x*100)/100, 
@@ -214,7 +215,5 @@ export function createLinearGradient(fill: any, component: any) {
 
         colorStr += `${formattedColor} ${Math.round(actualPercentage * 10000) / 100}%, `
     })
-
-
     return ` linear-gradient(${gradientAngle}deg, ${colorStr}) `    
 }
